@@ -1,5 +1,6 @@
 local api, fn = vim.api, vim.fn
 local nvim_buf_set_keymap = api.nvim_buf_set_keymap
+local nvim_buf_del_keymap = api.nvim_buf_del_keymap
 local fb = {}
 
 local function fname_path(buf)
@@ -290,6 +291,18 @@ local function create_menu(opt)
     })
   end
 
+  for _, item in ipairs(keys) do
+    nvim_buf_set_keymap(bufnr, 'n', item[1], '', {
+      noremap = true,
+      nowait = true,
+      callback = function()
+        local buf = buffers[item[2]].bufnr
+        api.nvim_win_close(winid, true)
+        api.nvim_win_set_buf(0, buf)
+      end,
+    })
+  end
+
   local wipes = {}
   nvim_buf_set_keymap(bufnr, 'n', opt.mark, '', {
     noremap = true,
@@ -365,6 +378,16 @@ local function create_menu(opt)
     callback = function()
       local pos = api.nvim_win_get_cursor(winid)
       api.nvim_win_set_cursor(winid, { pos[1], 1 })
+      pcall(vim.api.nvim_buf_del_keymap, bufnr, 'n', '<CR>')
+      nvim_buf_set_keymap(bufnr, 'n', '<CR>', '', {
+        noremap = true,
+        nowait = true,
+        callback = function()
+          local buf = buffers[pos[1]].bufnr
+          api.nvim_win_close(winid, true)
+          api.nvim_win_set_buf(0, buf)
+        end,
+      })
     end,
   })
 
