@@ -1,6 +1,5 @@
 local api, fn = vim.api, vim.fn
 local nvim_buf_set_keymap = api.nvim_buf_set_keymap
-local nvim_buf_del_keymap = api.nvim_buf_del_keymap
 local fb = {}
 
 local function fname_path(buf)
